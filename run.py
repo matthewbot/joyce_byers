@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
 from joyce_byers.flask_api import app
+from joyce_byers.messages import MessageProcessor
+import atexit
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0')
+    message_proc = MessageProcessor(3)
+
+    try:
+        app.message_callback = message_proc.add_message
+        app.run(host='0.0.0.0')
+    finally:
+        message_proc.stop()
