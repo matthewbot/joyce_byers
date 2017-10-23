@@ -33,11 +33,12 @@ class MessageProcessor(object):
                 msg = None
 
             if msg == exit_message:
-                print 'TODO: Turn off LEDs'
-                return
+                break
             elif msg is not None:
                 print 'TODO: Blink out {}'.format(msg)
                 time.sleep(60)
             else:
                 print 'TODO: Flicker'
                 time.sleep(60)
+
+        print 'TODO: Turn off LEDs'
