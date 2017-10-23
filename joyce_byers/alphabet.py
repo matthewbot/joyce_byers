@@ -3,8 +3,8 @@
 import time
 import random
 
-import ground
-import walle
+#import ground
+import joyce_byers.walle as walle
 
 # Brightness constants
 FULL = 1.
@@ -18,33 +18,33 @@ INTER_LETTER_DELAY = 0.5
 
 
 LETTERS = {
-        ['a'] = 1,
-        ['b'] = 1,
-        ['c'] = 1,
-        ['d'] = 1,
-        ['e'] = 1,
-        ['f'] = 1,
-        ['g'] = 1,
-        ['h'] = 1,
-        ['i'] = 1,
-        ['j'] = 1,
-        ['k'] = 1,
-        ['l'] = 1,
-        ['m'] = 1,
-        ['n'] = 1,
-        ['o'] = 1,
-        ['p'] = 1,
-        ['q'] = 1,
-        ['r'] = 1,
-        ['s'] = 1,
-        ['t'] = 1,
-        ['u'] = 1,
-        ['v'] = 1,
-        ['w'] = 1,
-        ['x'] = 1,
-        ['y'] = 1,
-        ['z'] = 1,
-       } 
+    'a': 1,
+    'b': 2,
+    'c': 3,
+    'd': 4,
+    'e': 5,
+    'f': 6,
+    'g': 7,
+    'h': 8,
+    'i': 9,
+    'j': 10,
+    'k': 11,
+    'l': 12,
+    'm': 13,
+    'n': 14,
+    'o': 15,
+    'p': 16,
+    'q': 17,
+    'r': 18,
+    's': 19,
+    't': 20,
+    'u': 21,
+    'v': 22,
+    'w': 23,
+    'x': 24,
+    'y': 25,
+    'z': 26,
+}
 
 class LedNetwork(object):
     """
@@ -60,11 +60,17 @@ class LedNetwork(object):
         green = self.COLORS[letter][1] * brightness
         blue = self.COLORS[letter][2] * brightness
         self._set_letter(self.leds[letter], red, green, blue)
-        
+
     def set_all(self, brightness):
         for letter in self.leds.iterkeys():
             self.set_letter(letter, brightness)
         self.update()
+
+    def update(self):
+        pass
+
+    def _set_letter(self, led, red, green, blue):
+        pass
 
 
 class WalleWrapper(LedNetwork):
@@ -72,44 +78,44 @@ class WalleWrapper(LedNetwork):
     Wrapper around WallE library for controlling a string of LEDs
     """
     BASE_COLORS = [
-              (1., 0., 0.),
-              (0., 1., 0.),
-              (0., 0., 1.),
-              (1., 1., 0.),
-             ]
+        (1., 0., 0.),
+        (0., 1., 0.),
+        (0., 0., 1.),
+        (1., 1., 0.),
+    ]
     COLORS = {letter: random.choice(BASE_COLORS) for letter in LETTERS.iterkeys()}
 
     def __init__(self):
-        self.network = walle.WallE(0,0)
+        self.network = walle.WallE(0, 0)
         self.network.array.clear()
         self.network.array.autoupdate = False
-        all_leds = [string.PrettyLed(led) for led in w.array.leds]
-        self.leds = {letter: all_leds[index] for letter, index in LETTERS.iteriems()}
+        all_leds = [walle.PrettyLed(led) for led in self.network.array.leds]
+        self.leds = {letter: all_leds[index] for letter, index in LETTERS.iteritems()}
 
     def update(self):
         self.network.array.update()
 
     def _set_letter(self, led, red, green, blue):
-        led.red = reg
+        led.red = red
         led.green = green
         led.blue = blue
         led.update()
 
 
-class ConstellationWrapper(LedNetwork):
-    """
-    Wrapper around constellation ground library for controlling wirelss LEDs
-    """
-    BASE_COLORS = [
-              (1., 0., 0.),
-              (0., 1., 0.),
-              (0., 0., 1.),
-              (1., 1., 0.),
-             ]
-    COLORS = {letter: random.choice(BASE_COLORS) for letter in LETTERS.iterkeys()}
-    def __init__(self):
-        network = ground.GroundBase()
-        network.parse_args()
+# class ConstellationWrapper(LedNetwork):
+#     """
+#     Wrapper around constellation ground library for controlling wirelss LEDs
+#     """
+#     BASE_COLORS = [
+#               (255, 0., 0.),
+#               (0., 255, 0.),
+#               (0., 0., 255),
+#               (255, 255, 0.),
+#              ]
+#     COLORS = {letter: random.choice(BASE_COLORS) for letter in LETTERS.iterkeys()}
+#     def __init__(self):
+#         network = ground.GroundBase()
+#         network.parse_args()
 
 
 class Alphabet(object):
@@ -121,13 +127,13 @@ class Alphabet(object):
         self._wired = wired
         if wired:
             self.leds = WalleWrapper()
-        else:
-            self.leds = ConstellationWrapper()
+#        else:
+#            self.leds = ConstellationWrapper()
         self.normal()
 
     def text(self, message):
         self.off()
-        
+
         cleaned = [char.lower() for char in message]
         for char in cleaned:
             self.leds.set_letter(char, MOSTLY)
@@ -148,4 +154,11 @@ class Alphabet(object):
         self.text(text)
         self.normal()
 
-
+    def flicker(self):
+        for flash in range(10):
+            brightness = random.random()
+            self.off()
+            time.sleep(random.random())
+            self.leds.set_all(brightness)
+            time.sleep(random.random())
+        self.normal()
