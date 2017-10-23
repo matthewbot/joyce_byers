@@ -5,9 +5,10 @@ import time
 exit_message = object()
 
 class MessageProcessor(object):
-    def __init__(self, size):
+    def __init__(self, max_size, flicker_timeout):
         self.thread = threading.Thread(target=self.run, name='MessageProcessor')
-        self.queue = Queue.Queue(maxsize=size)
+        self.queue = Queue.Queue(maxsize=max_size)
+        self.flicker_timeout = flicker_timeout
 
         self.thread.start()
 
@@ -27,7 +28,7 @@ class MessageProcessor(object):
 
         while True:
             try:
-                msg = self.queue.get(True, 120)
+                msg = self.queue.get(True, self.flicker_timeout)
             except Queue.Empty:
                 msg = None
 

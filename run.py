@@ -5,7 +5,8 @@ from joyce_byers.messages import MessageProcessor
 import atexit
 
 if __name__ == '__main__':
-    message_proc = MessageProcessor(3)
+    message_proc = MessageProcessor(max_size=3,
+                                    flicker_timeout=120)
 
     try:
         app.message_callback = message_proc.add_message
