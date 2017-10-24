@@ -61,12 +61,13 @@ class LedNetwork(object):
         self.leds = {letter: None for letter in LETTERS}
         self.COLORS = {letter: random.choice(self.BASE_COLORS) for letter in LETTERS.iterkeys()}
 
-    def set_letter(self, letter, brightness):
+    def set_letter(self, letter, brightness, update=False):
         red = self.COLORS[letter][0] * brightness
         green = self.COLORS[letter][1] * brightness
         blue = self.COLORS[letter][2] * brightness
         self.set_led(self.leds[letter], red, green, blue)
-        self.update()
+        if update:
+            self.update()
 
     def set_all(self, brightness):
         for letter in self.leds.iterkeys():
@@ -143,9 +144,9 @@ class Alphabet(object):
 
         cleaned = [char.lower() for char in message]
         for char in cleaned:
-            self.leds.set_letter(char, MOSTLY)
+            self.leds.set_letter(char, MOSTLY, update=True)
             time.sleep(LETTER_ON_DELAY)
-            self.leds.set_letter(char, OFF)
+            self.leds.set_letter(char, OFF, update=True)
             time.sleep(INTER_LETTER_DELAY)
 
     def normal(self):
@@ -158,14 +159,36 @@ class Alphabet(object):
         self.leds.set_all(OFF)
 
     def message(self, text):
+        self.flicker(20)
+        self.fade(MOSTLY, FULL, 1)
+        time.sleep(2)
+        self.fade(FULL, OFF, 0.5)
+        time.sleep(0.5)
         self.text(text)
-        self.normal()
+        time.sleep(3)
+        self.fade(OFF, DIM, 1)
 
-    def flicker(self):
-        for flash in range(10):
-            brightness = random.random()
+    def flicker(self, cycles=20):
+        for flash in range(cycles):
+            brightness = random.random() / 10. + 0.9
             self.off()
-            time.sleep(random.random())
+            time.sleep(random.random() / 10)
             self.leds.set_all(brightness)
-            time.sleep(random.random())
-        self.normal()
+            time.sleep(random.random() / 10)
+
+    def fade(self, frm=0., to=1., duration=3):
+        step = 1 if to > frm else -1
+        to = int(to * 100)
+        frm = int(frm * 100)
+        delay = 1. * duration / abs(to - frm)
+        for brightness in range(frm, to, step):
+            self.leds.set_all(brightness / 100.)
+            time.sleep(delay)
+        
+    def flicker_letter(self, letter, cycles=5):
+        for flash in range(cycles):
+            brightness = random.random() / 10. + 0.9
+            self.leds.set_letter(letter, OFF, update=True)
+            time.sleep(random.random() / 20)
+            self.leds.set_all(letter, brightness, update=True)
+            time.sleep(random.random() / 20)
