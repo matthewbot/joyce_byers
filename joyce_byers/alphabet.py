@@ -144,8 +144,7 @@ class Alphabet(object):
 
         cleaned = [char.lower() for char in message]
         for char in cleaned:
-            self.leds.set_letter(char, MOSTLY, update=True)
-            time.sleep(LETTER_ON_DELAY)
+            self.flicker_letter(char)
             self.leds.set_letter(char, OFF, update=True)
             time.sleep(INTER_LETTER_DELAY)
 
