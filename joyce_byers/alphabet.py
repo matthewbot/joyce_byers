@@ -50,16 +50,23 @@ class LedNetwork(object):
     """
     Base class for wrapping up LED arrays
     """
-    COLORS = {letter: (0, 0, 0) for letter in LETTERS}
+    BASE_COLORS = [
+        (1., 0., 0.),
+        (0., 1., 0.),
+        (0., 0., 1.),
+        (1., 1., 0.),
+    ]
 
     def __init__(self):
         self.leds = {letter: None for letter in LETTERS}
+        self.COLORS = {letter: random.choice(self.BASE_COLORS) for letter in LETTERS.iterkeys()}
 
     def set_letter(self, letter, brightness):
         red = self.COLORS[letter][0] * brightness
         green = self.COLORS[letter][1] * brightness
         blue = self.COLORS[letter][2] * brightness
-        self._set_letter(self.leds[letter], red, green, blue)
+        self.set_led(self.leds[letter], red, green, blue)
+        self.update()
 
     def set_all(self, brightness):
         for letter in self.leds.iterkeys():
@@ -69,7 +76,7 @@ class LedNetwork(object):
     def update(self):
         pass
 
-    def _set_letter(self, led, red, green, blue):
+    def set_led(self, led, red, green, blue):
         pass
 
 
@@ -83,9 +90,9 @@ class WalleWrapper(LedNetwork):
         (0., 0., 1.),
         (1., 1., 0.),
     ]
-    COLORS = {letter: random.choice(BASE_COLORS) for letter in LETTERS.iterkeys()}
 
     def __init__(self):
+        super(WalleWrapper, self).__init__()
         self.network = walle.WallE(0, 0)
         self.network.array.clear()
         self.network.array.autoupdate = False
@@ -95,11 +102,10 @@ class WalleWrapper(LedNetwork):
     def update(self):
         self.network.array.update()
 
-    def _set_letter(self, led, red, green, blue):
+    def set_led(self, led, red, green, blue):
         led.red = red
         led.green = green
         led.blue = blue
-        led.update()
 
 
 # class ConstellationWrapper(LedNetwork):
@@ -133,6 +139,7 @@ class Alphabet(object):
 
     def text(self, message):
         self.off()
+        time.sleep(1)
 
         cleaned = [char.lower() for char in message]
         for char in cleaned:
