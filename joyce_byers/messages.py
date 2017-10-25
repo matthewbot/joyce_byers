@@ -2,6 +2,8 @@ import Queue
 import threading
 import time
 
+from joyce_byers import alphabet
+
 exit_message = object()
 
 class MessageProcessor(object):
@@ -25,6 +27,7 @@ class MessageProcessor(object):
 
     def run(self):
         print 'TODO: Turn on LEDs'
+        abc = alphabet.Alphabet()
 
         while True:
             try:
@@ -36,9 +39,12 @@ class MessageProcessor(object):
                 break
             elif msg is not None:
                 print 'TODO: Blink out {}'.format(msg)
+                abc.message(msg)
                 time.sleep(60)
             else:
                 print 'TODO: Flicker'
+                abc.flicker()
                 time.sleep(60)
 
         print 'TODO: Turn off LEDs'
+        abc.off()
