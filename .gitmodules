@@ -1,0 +1,3 @@
+[submodule "joyce_byers/constellation"]
+	path = constellation
+	url = git@github.com:bwasserm/constellation.git
