@@ -18,32 +18,32 @@ INTER_LETTER_DELAY = 0.5
 
 
 LETTERS = {
-    'a': 1,
-    'b': 2,
-    'c': 3,
-    'd': 4,
-    'e': 5,
-    'f': 6,
-    'g': 7,
-    'h': 8,
-    'i': 9,
-    'j': 10,
-    'k': 11,
-    'l': 12,
-    'm': 13,
-    'n': 14,
-    'o': 15,
-    'p': 16,
-    'q': 17,
-    'r': 18,
-    's': 19,
-    't': 20,
-    'u': 21,
-    'v': 22,
-    'w': 23,
-    'x': 24,
-    'y': 25,
-    'z': 26,
+    'a': 18,
+    'b': 20,
+    'c': 22,
+    'd': 24,
+    'e': 26,
+    'f': 28,
+    'g': 30,
+    'h': 32,
+    'i': 54,
+    'j': 52,
+    'k': 50,
+    'l': 48,
+    'm': 46,
+    'n': 44,
+    'o': 42,
+    'p': 40,
+    'q': 37,
+    'r': 59,
+    's': 61,
+    't': 63,
+    'u': 65,
+    'v': 67,
+    'w': 69,
+    'x': 71,
+    'y': 73,
+    'z': 75,
 }
 
 class LedNetwork(object):
@@ -57,10 +57,6 @@ class LedNetwork(object):
         (1., 1., 0.),
     ]
 
-#    def __init__(self):
-#        self.leds = {}
-#        self.COLORS = {led: random.choice(self.BASE_COLORS) for led in range(len(self.leds))}
-
     def set_letter(self, letter, brightness, update=False):
         self.set_led_brightness(LETTERS[letter], brightness)
         if update:
@@ -72,7 +68,7 @@ class LedNetwork(object):
         self.update()
 
     def set_all_leds(self, brightness):
-        for led in self.leds.itervalues():
+        for led in self.leds.iterkeys():
             self.set_led_brightness(led, brightness)
         self.update()
 
@@ -99,7 +95,7 @@ class WalleWrapper(LedNetwork):
         self.network.array.clear()
         self.network.array.autoupdate = False
         self.leds = {idx: walle.PrettyLed(led) for idx, led in enumerate(self.network.array.leds)}
-        self.COLORS = {idx: random.choice(self.BASE_COLORS) for idx in range(len(self.leds))}
+        self.COLORS = {idx: random.choice(self.BASE_COLORS) for idx in self.leds.keys()}
 #        self.leds = {letter: all_leds[index] for letter, index in LETTERS.iteritems()}
         print self.leds.keys()
         print self.COLORS.keys()
@@ -123,8 +119,8 @@ class ConstellationWrapper(LedNetwork):
         self.leds = {idx: idx for idx in range(self.network.NUM_NODES)}
         self.COLORS = {idx: random.choice(self.BASE_COLORS) for idx in range(len(self.leds))}
         self.led_vals = {}
-        print self.leds
-        print self.COLORS.keys()
+        #print self.leds
+        #print self.COLORS.keys()
 
     def update(self):
         self.network.set_nodes(self.led_vals)
@@ -160,16 +156,19 @@ class Alphabet(object):
     def normal(self, extras=True):
         self.letters.set_all_letters(DIM)
         if extras:
+            self.letters.set_all_leds(DIM)
             self.extras.set_all_leds(DIM)
 
     def full(self, extras=True):
         self.letters.set_all_letters(FULL)
         if extras:
+            self.letters.set_all_leds(FULL)
             self.extras.set_all_leds(FULL)
 
     def off(self, extras=True):
         self.letters.set_all_letters(OFF)
         if extras:
+            self.letters.set_all_leds(OFF)
             self.extras.set_all_leds(OFF)
 
     def message(self, text):
