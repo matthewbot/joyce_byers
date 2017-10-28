@@ -97,8 +97,6 @@ class WalleWrapper(LedNetwork):
         self.leds = {idx: walle.PrettyLed(led) for idx, led in enumerate(self.network.array.leds)}
         self.COLORS = {idx: random.choice(self.BASE_COLORS) for idx in self.leds.keys()}
 #        self.leds = {letter: all_leds[index] for letter, index in LETTERS.iteritems()}
-        print self.leds.keys()
-        print self.COLORS.keys()
 
     def update(self):
         self.network.array.update()
@@ -119,8 +117,6 @@ class ConstellationWrapper(LedNetwork):
         self.leds = {idx: idx for idx in range(self.network.NUM_NODES)}
         self.COLORS = {idx: random.choice(self.BASE_COLORS) for idx in range(len(self.leds))}
         self.led_vals = {}
-        #print self.leds
-        #print self.COLORS.keys()
 
     def update(self):
         self.network.set_nodes(self.led_vals)
@@ -149,9 +145,12 @@ class Alphabet(object):
 
         cleaned = [char.lower() for char in message]
         for char in cleaned:
-            self.flicker_letter(char)
-            self.letters.set_letter(char, OFF, update=True)
-            time.sleep(INTER_LETTER_DELAY)
+            if char == ' ':
+                time.sleep(INTER_LETTER_DELAY)
+            elif char in LETTERS:
+                self.flicker_letter(char)
+                self.letters.set_letter(char, OFF, update=True)
+                time.sleep(INTER_LETTER_DELAY)
 
     def normal(self, extras=True):
         self.letters.set_all_letters(DIM)
@@ -172,21 +171,24 @@ class Alphabet(object):
             self.extras.set_all_leds(OFF)
 
     def message(self, text):
-        self.flicker(20)
-        self.fade(MOSTLY, FULL, 1)
-        time.sleep(2)
-        self.fade(FULL, OFF, 0.5)
+        self.fade(MOSTLY, FULL, 0.5)
+        for i in range(1, 4):
+            self.flicker(i)
+            time.sleep(1./i)
+#        self.fade(MOSTLY, FULL, 0.5)
+#        time.sleep(1)
+#        self.fade(FULL, OFF, 0.2)
         time.sleep(0.5)
         self.text(text)
         time.sleep(3)
-        self.fade(OFF, DIM, 1)
+        self.normal()
 
     def flicker(self, cycles=20):
         for flash in range(cycles):
             brightness = random.random() / 10. + 0.9
             self.off()
             time.sleep(random.random() / 10)
-            self.letters.set_all_letters(brightness)
+            self.letters.set_all_leds(brightness)
             self.extras.set_all_leds(brightness)
             time.sleep(random.random() / 10)
 
@@ -196,7 +198,7 @@ class Alphabet(object):
         frm = int(frm * 100)
         delay = 1. * duration / abs(to - frm)
         for brightness in range(frm, to, step):
-            self.letters.set_all_letters(brightness / 100.)
+            self.letters.set_all_leds(brightness / 100.)
             self.extras.set_all_leds(brightness / 100.)
             time.sleep(delay)
         
