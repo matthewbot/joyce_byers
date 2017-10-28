@@ -148,7 +148,9 @@ class Alphabet(object):
             if char == ' ':
                 time.sleep(INTER_LETTER_DELAY)
             elif char in LETTERS:
-                self.flicker_letter(char)
+                self.flicker_letter(char, 3)
+                self.letters.set_letter(char, FULL, update=True)
+                time.sleep(1)
                 self.letters.set_letter(char, OFF, update=True)
                 time.sleep(INTER_LETTER_DELAY)
 
