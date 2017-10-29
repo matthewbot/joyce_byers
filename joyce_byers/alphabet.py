@@ -51,10 +51,12 @@ class LedNetwork(object):
     Base class for wrapping up LED arrays
     """
     BASE_COLORS = [
-        (1., 0., 0.),
-        (0., 1., 0.),
-        (0., 0., 1.),
-        (1., 1., 0.),
+        (1., 1., 1.),  # white
+        (1., 0., 0.),  # red
+        (0., 1., 0.),  # green
+        (0., 0., 1.),  # blue
+        (1., .8, 0.),  # yellow
+        (1., 0., .8),  # pink
     ]
 
     def set_letter(self, letter, brightness, update=False):
