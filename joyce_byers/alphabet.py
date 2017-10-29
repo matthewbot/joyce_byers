@@ -120,6 +120,7 @@ class ConstellationWrapper(LedNetwork):
 
     def update(self):
         self.network.set_nodes(self.led_vals)
+        self.network.set_nodes(self.led_vals)
         self.led_vals = {}
    
     def set_led(self, led, red, green, blue):
@@ -173,7 +174,8 @@ class Alphabet(object):
             self.extras.set_all_leds(OFF)
 
     def message(self, text):
-        self.fade(MOSTLY, FULL, 0.5)
+        self.off()
+#        self.fade(MOSTLY, FULL, 0.5)
         for i in range(1, 4):
             self.flicker(i)
             time.sleep(1./i)
@@ -187,7 +189,7 @@ class Alphabet(object):
 
     def flicker(self, cycles=20):
         for flash in range(cycles):
-            brightness = random.random() / 10. + 0.9
+            brightness = random.random() / 5. + 0.8
             self.off()
             time.sleep(random.random() / 10)
             self.letters.set_all_leds(brightness)

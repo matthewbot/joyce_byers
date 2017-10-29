@@ -11,6 +11,7 @@ class MessageProcessor(object):
         self.thread = threading.Thread(target=self.run, name='MessageProcessor')
         self.queue = Queue.Queue(maxsize=max_size)
         self.flicker_timeout = flicker_timeout
+        self._portal_opened = False
 
         self.thread.start()
 
@@ -26,7 +27,6 @@ class MessageProcessor(object):
         self.thread.join()
 
     def run(self):
-        print 'TODO: Turn on LEDs'
         abc = alphabet.Alphabet()
 
         while True:
@@ -38,13 +38,11 @@ class MessageProcessor(object):
             if msg == exit_message:
                 break
             elif msg is not None:
-                print 'TODO: Blink out {}'.format(msg)
                 abc.message(msg)
-                time.sleep(60)
+                self._portal_opened = True
             else:
-                print 'TODO: Flicker'
-                abc.flicker()
-                time.sleep(60)
+                if self._portal_opened:
+                    abc.flicker()
+                abc.normal()
 
-        print 'TODO: Turn off LEDs'
         abc.off()
